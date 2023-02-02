@@ -16,7 +16,7 @@ class GroupbyQuadra:
     def extract_quadra(self, df):
     
         contrib_col = 'NUMERO DO CONTRIBUINTE'
-        df['quadra'] = df[contrib_col].str.slice(0, -6)
+        df['quadra'] = df[contrib_col].str.slice(0, 3)
     
     def col_to_numeric(self, df,col):
         
