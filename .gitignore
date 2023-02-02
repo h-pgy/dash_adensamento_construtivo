@@ -1,4 +1,5 @@
 #project-specific ignores
+data/
 original_data/
 
 # Byte-compiled / optimized / DLL files
