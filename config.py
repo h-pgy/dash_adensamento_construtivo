@@ -6,6 +6,7 @@ SHP_FOLDER = solve_dir(solve_path('shp_files', ORIGINAL_DATA_FOLDER))
 ZIP_FOLDER = solve_dir(solve_path('shp_zips', ORIGINAL_DATA_FOLDER))
 IPTU_DATA_FOLDER = solve_dir(solve_path('iptu_data', ORIGINAL_DATA_FOLDER))
 
+GENERATED_DATA_FOLDER = 'data'
 
 URIS_CAMADAS = {
     'quadras_fiscais' : r'12_Cadastro%5C%5CQuadra%5C%5CShapefile%5C%5CSIRGAS_SHP_quadraMDSF',
