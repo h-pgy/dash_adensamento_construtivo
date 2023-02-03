@@ -2,22 +2,27 @@ from core.read_data import iptu_gen
 from core.utils.file_path import solve_path
 import pandas as pd
 import os
-from .group_iptu import GroupbyQuadra
-from config import GENERATED_DATA_FOLDER
+from .group_iptu import GroupbySetor
+from config import GENERATED_DATA_FOLDER, IPTU_YEARS
 
 class TransformAllIptu:
     
-    def __init__(self, folder = GENERATED_DATA_FOLDER):
+    def __init__(self, folder:str = GENERATED_DATA_FOLDER, years:list=IPTU_YEARS)->None:
         
         self.iptus = iptu_gen() 
-        self.transform = GroupbyQuadra()
+        self.transform = GroupbySetor()
         self.folder = folder
-        
-    def get_fname(self, df):
+        self.years = years
+
+    def extract_ano_df(self, df:pd.DataFrame)->str:
         
         ano = df['ano_arquivo'].unique()[0]
-        fname = f'{ano}_quadras.parquet.gzip'
+        return ano
+
+    def get_fname(self, ano:int)->str:
         
+        
+        fname = f'{ano}_setores.parquet.gzip'
         fname = solve_path(fname, parent=self.folder)
         
         return fname
@@ -26,40 +31,55 @@ class TransformAllIptu:
         
         grouped.to_parquet(fname,
               compression='gzip')
+
+    def read_parquet(self, fname:str)->pd.DataFrame:
+
+        return pd.read_parquet(fname)
         
-    def save_all_parquets(self):
+    def save_all_parquets(self, all_dfs:list):
         
-        all_dfs = []
         for iptu in self.iptus:
-            fname = self.get_fname(iptu)
-            if os.path.exists(fname):
-                print(f'Reading {fname}')
-                grouped = pd.read_parquet(fname)
-            else:
-                print(f'Saving {fname}')
-                grouped = self.transform(iptu)
-                self.save_parquet(grouped, fname)
+            ano = self.extract_ano_df(iptu)
+            fname = self.get_fname(ano)
+            print(f'Saving {fname}')
+            grouped = self.transform(iptu)
+            self.save_parquet(grouped, fname)
             
             all_dfs.append(grouped)
-        
-        final = pd.concat(all_dfs)
-        
-        return final
+
+    def read_all_parquets(self)->list:
+
+        all_data = []
+        for ano in self.years:
+            fname = self.get_fname(ano)
+            try:
+                grouped = self.read_parquet(fname)
+                all_data.append(grouped)
+            except FileNotFoundError:
+                return []
+        return all_data
+
+            
     
     
     def pipeline(self):
         
-        fname = solve_path('quadra_all_years.parquet.gzip', self.folder)
+        fname = solve_path('setores_all_years.parquet.gzip', self.folder)
         
         if os.path.exists(fname):
             print('Reading saved file')
             return pd.read_parquet(fname)
         
-        final = self.save_all_parquets()
+        all_data = self.read_all_parquets()
+
+        if len(all_data)<1:
+            self.save_all_parquets(all_data)
+
+        final = pd.concat(all_data)
         self.save_parquet(final, fname)
+
         
         return final
-
     
     def __call__(self):
         

@@ -12,7 +12,7 @@ class ShpDownloader:
     shp_folder = SHP_FOLDER
     aliases = URIS_CAMADAS
 
-    def get_file_uri(self, alias):
+    def get_file_uri(self, alias:str)->str:
 
         fname = self.aliases[alias]
 
@@ -20,7 +20,7 @@ class ShpDownloader:
 
         return self.domain + uri
     
-    def download_shp_zip(self, alias):
+    def download_shp_zip(self, alias:str)->str:
 
         uri = self.get_file_uri(alias)
         fname = solve_path(f'{alias}.zip', parent=self.zip_folder)
@@ -29,18 +29,18 @@ class ShpDownloader:
 
         return fname
     
-    def shp_path(self, alias):
+    def shp_path(self, alias:str)->str:
 
         return solve_dir(solve_path(alias, self.shp_folder))
     
-    def unzip_shp(self, zip_path, alias):
+    def unzip_shp(self, zip_path:str, alias:str)->None:
 
         dir_name = self.shp_path(alias)
 
         unzip_file(zip_path, dir_name)
 
 
-    def check_shp_exists(self, shp_folder):
+    def check_shp_exists(self, shp_folder:str)->bool:
         
         checagem = check_dir_exists(shp_folder)
         if checagem:
@@ -49,7 +49,7 @@ class ShpDownloader:
                 return True
         return False
 
-    def pipe_download_shp(self, alias, check=True):
+    def pipe_download_shp(self, alias:str, check=True)->str:
 
         shp_path = self.shp_path(alias)
         if check:
@@ -64,7 +64,7 @@ class ShpDownloader:
 
         return shp_path
 
-    def download_all_shapes(self, check=True, delete_zips=True):
+    def download_all_shapes(self, check:bool=True, delete_zips:bool=True)->None:
 
         for alias in self.aliases.keys():
             self.pipe_download_shp(alias, check)
@@ -72,6 +72,6 @@ class ShpDownloader:
         if delete_zips:
             delete_existing_files(self.zip_folder, extension='.zip')
     
-    def __call__(self, check=True):
+    def __call__(self, check=True)->None:
 
         self.download_all_shapes(check)
