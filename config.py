@@ -14,4 +14,4 @@ URIS_CAMADAS = {
     'zoneamento' : r'13_Legisla%E7%E3o%20Urbana%5C%5CZoneamento_Lei16402-16_Mapa_01_Principal%5C%5CShapefile%5C%5CMapa-1-SHP',
 }
 
-IPTU_YEARS = range(2013, 2023)
+IPTU_YEARS = range(1995, 2023)
