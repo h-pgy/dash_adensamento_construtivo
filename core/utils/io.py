@@ -2,7 +2,7 @@ import requests
 import zipfile
 
 
-def download_binary_file(url, fname):
+def download_binary_file(url:str, fname:str)->None:
 
     with requests.get(url) as r:
         content = r.content
@@ -11,7 +11,7 @@ def download_binary_file(url, fname):
         f.write(content)
         print(f'File {fname} saved')
 
-def download_text_file(url, fname):
+def download_text_file(url:str, fname:str)->None:
 
     with requests.get(url) as r:
         text = r.text
@@ -21,7 +21,7 @@ def download_text_file(url, fname):
         print(f'File {fname} saved')
 
 
-def unzip_file(zip_file_path, target_dir):
+def unzip_file(zip_file_path:str, target_dir:str)->None:
 
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
         zip_ref.extractall(target_dir)

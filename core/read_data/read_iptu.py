@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from typing import Generator
 from core.utils.file_path import list_files
 from config import IPTU_DATA_FOLDER
 
@@ -10,18 +11,18 @@ class IptuCsvReader:
 
         return list_files(IPTU_DATA_FOLDER, extension='csv')
 
-    def extract_year(self, fpath):
+    def extract_year(self, fpath:str)->int:
 
         fname = os.path.split(fpath)[-1]
         return int(fname[-8:-4])
 
 
-    def input_year(self, df, fpath):
+    def input_year(self, df:pd.DataFrame, fpath:str)->None:
 
         year = self.extract_year(fpath)
         df['ano_arquivo'] = year
 
-    def read_csv(self, fpath):
+    def read_csv(self, fpath:str)->pd.DataFrame:
 
 
         try:
@@ -33,13 +34,13 @@ class IptuCsvReader:
 
         return df
     
-    def csv_gen(self):
+    def csv_gen(self)->Generator[pd.DataFrame]:
         
         csv_lst = self.lst_iptu_csvs()
         
         for csv in csv_lst:
             yield self.read_csv(csv)
             
-    def __call__(self):
+    def __call__(self)->Generator[pd.DataFrame]:
         
         return self.csv_gen()
