@@ -6,14 +6,15 @@ class ReadShape:
 
     def __init__(self, alias:str)->None:
 
-        self.folder = self.get_folder()
         self.alias = alias
+        self.folder = self.get_folder()
+        
 
     def get_folder(self)->str:
 
-        quadras_shp_folder = solve_path(self.alias, SHP_FOLDER)
+        shp_folder = solve_path(self.alias, SHP_FOLDER)
 
-        return quadras_shp_folder
+        return shp_folder
 
     def get_shape_fpath(self)->str:
 

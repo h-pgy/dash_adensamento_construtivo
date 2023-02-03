@@ -1,4 +1,3 @@
-from .transform_iptu import TransformAllIptu
+from .join_shape import JoinShp
 
-
-transform_iptu = TransformAllIptu()
+shp_setores_calculado = JoinShp()

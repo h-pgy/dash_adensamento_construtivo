@@ -34,13 +34,13 @@ class IptuCsvReader:
 
         return df
     
-    def csv_gen(self)->Generator[pd.DataFrame]:
+    def csv_gen(self)->Generator[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         
         csv_lst = self.lst_iptu_csvs()
         
         for csv in csv_lst:
             yield self.read_csv(csv)
             
-    def __call__(self)->Generator[pd.DataFrame]:
+    def __call__(self)->Generator[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         
         return self.csv_gen()
