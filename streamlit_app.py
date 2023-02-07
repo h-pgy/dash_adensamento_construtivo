@@ -7,25 +7,9 @@ from core.transform_data import shp_setores_calculado
 
 st.title('Adensamento Construtivo da Cidade de São Paulo', anchor=None)
 
-@st.cache(allow_output_mutation=True)
-def filtrar_ano_geojson(geojson:dict, ano:int)->dict:
+def gerar_mapa_setores(col_altura = 'sum_area_construida', ano=2022, dividir_altura = 1000):
     
-    filtered = []
-    geojson = copy(geojson)
-    for f in geojson['features']:
-        if f['properties']['ano']==ano:
-            filtered.append(f)
-            
-    geojson['features']=filtered
-    
-    return geojson
-
-with open('data.geojson', 'r') as f:
-    geojson =  json.load(f)
-
-def gerar_mapa_setores(data=geojson, col_altura = 'sum_area_construida', ano=2022, dividir_altura = 1000):
-    
-    #data = 'https://raw.githubusercontent.com/h-pgy/dash_adensamento_construtivo/main/dados.geojson'
+    data = 'https://raw.githubusercontent.com/h-pgy/dash_adensamento_construtivo/main/data.geojson'
     layer = pdk.Layer(
         "GeoJsonLayer",
         data,
@@ -36,7 +20,7 @@ def gerar_mapa_setores(data=geojson, col_altura = 'sum_area_construida', ano=202
         wireframe=True,
         pickable=True,
         get_elevation =f"properties.{col_altura}_{ano}/{dividir_altura}",
-        get_fill_color=[255, 255, 255],
+        get_fill_color=f"[0.0000255*properties.{col_altura}_{ano}, 100, 0]",
         get_line_color=[230, 230, 255],
         auto_highlight=True,
 
