@@ -3,6 +3,7 @@ import pydeck as pdk
 import json
 from copy import copy
 import requests
+from core.transform_data import shp_setores_calculado
 
 st.title('Adensamento Construtivo da Cidade de São Paulo', anchor=None)
 
@@ -19,9 +20,12 @@ def filtrar_ano_geojson(geojson:dict, ano:int)->dict:
     
     return geojson
 
-def gerar_mapa_setores(col_altura = 'sum_area_c', dividir_altura = 1000):
+with open('data.geojson', 'r') as f:
+    geojson =  json.load(f)
+
+def gerar_mapa_setores(data=geojson, col_altura = 'sum_area_construida', ano=2022, dividir_altura = 1000):
     
-    data = 'https://raw.githubusercontent.com/h-pgy/dash_adensamento_construtivo/main/dados.geojson'
+    #data = 'https://raw.githubusercontent.com/h-pgy/dash_adensamento_construtivo/main/dados.geojson'
     layer = pdk.Layer(
         "GeoJsonLayer",
         data,
@@ -31,8 +35,8 @@ def gerar_mapa_setores(col_altura = 'sum_area_c', dividir_altura = 1000):
         extruded=True,
         wireframe=True,
         pickable=True,
-        get_elevation =f"properties.{col_altura}/{dividir_altura}",
-        get_fill_color="[255, 255, properties.mean_valor*255]",
+        get_elevation =f"properties.{col_altura}_{ano}/{dividir_altura}",
+        get_fill_color=[255, 255, 255],
         get_line_color=[230, 230, 255],
         auto_highlight=True,
 

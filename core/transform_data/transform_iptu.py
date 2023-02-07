@@ -60,7 +60,10 @@ class TransformAllIptu:
         return all_data
 
             
-    
+    def clean_year_col(self, df:pd.DataFrame)->None:
+
+        df.rename({'ano_x' : 'ano'}, axis=1, inplace=True)
+        df.drop('ano_y', axis=1, inplace=True)
     
     def pipeline(self):
         
@@ -76,6 +79,7 @@ class TransformAllIptu:
             self.save_all_parquets(all_data)
 
         final = pd.concat(all_data)
+        self.clean_year_col(final)
         self.save_parquet(final, fname)
 
         
