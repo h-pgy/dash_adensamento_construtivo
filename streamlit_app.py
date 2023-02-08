@@ -59,7 +59,7 @@ def gerar_mapa_setores(col_altura = 'prop_area_construida', col_cor='prop_area_c
     
     return r
 
-r = gerar_mapa_setores(ano=ano, dividir_altura=0.001)
+r = gerar_mapa_setores(ano=ano, dividir_altura=0.01)
 
 st.pydeck_chart(
     r
