@@ -4,12 +4,24 @@ import json
 from copy import copy
 import requests
 from core.transform_data import shp_setores_calculado
+import requests
+import time
 
 st.title('Adensamento Construtivo da Cidade de São Paulo', anchor=None)
 
-def gerar_mapa_setores(col_altura = 'sum_area_construida', ano=2022, dividir_altura = 1000):
+ano = st.selectbox(
+    'Escolha o ano?',
+    ('1995', '2013', '2022'))
+
+def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='mean_valor_do_m2_do_terreno', 
+                        ano=2022, dividir_altura = 1000):
+
+    #tem que atualizar o link do ngrok
+    ngrok = 'https://a908-2804-7f0-bcc0-af09-53b1-4844-a929-ae44.sa.ngrok.io'
+    data = ngrok + '/data.geojson'
     
-    data = 'https://raw.githubusercontent.com/h-pgy/dash_adensamento_construtivo/main/data.geojson'
+
+    col_altura = f'{col_altura}_{ano}'
     layer = pdk.Layer(
         "GeoJsonLayer",
         data,
@@ -19,8 +31,8 @@ def gerar_mapa_setores(col_altura = 'sum_area_construida', ano=2022, dividir_alt
         extruded=True,
         wireframe=True,
         pickable=True,
-        get_elevation =f"properties.{col_altura}_{ano}/{dividir_altura}",
-        get_fill_color=f"[0.0000255*properties.{col_altura}_{ano}, 100, 0]",
+        get_elevation =f"properties.{col_altura}/{dividir_altura}",
+        get_fill_color=f"[properties.{col_altura}/{dividir_altura}*100, 180, 182]",
         get_line_color=[230, 230, 255],
         auto_highlight=True,
 
@@ -29,16 +41,25 @@ def gerar_mapa_setores(col_altura = 'sum_area_construida', ano=2022, dividir_alt
     view_state = pdk.ViewState(
         **{"latitude": -23.6, "longitude": -46.6, "zoom": 10, "maxZoom": 16, "pitch": 45, "bearing": 8}
     )
+
+    tooltip = {
+   "html": f"<b>Altura:</b> {{properties.{col_altura}}} <br/>",
+   "style": {
+        "backgroundColor": "steelblue",
+        "color": "white"
+        }
+    }
     
     r = pdk.Deck(
         layer,
         initial_view_state=view_state,
         map_style=pdk.map_styles.DARK,
+        tooltip=tooltip
     )
     
     return r
 
-r = gerar_mapa_setores()
+r = gerar_mapa_setores(ano=ano, dividir_altura=1000)
 
 st.pydeck_chart(
     r
