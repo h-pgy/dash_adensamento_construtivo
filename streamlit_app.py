@@ -13,7 +13,7 @@ ano = st.selectbox(
     'Escolha o ano?',
     ('1995', '2013', '2022'))
 
-def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='mean_valor_do_m2_do_terreno', 
+def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='prop_area_construida', 
                         ano=2022, dividir_altura = 1000):
 
     #tem que atualizar o link do ngrok
@@ -22,6 +22,7 @@ def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='mean_valor_d
     
 
     col_altura = f'{col_altura}_{ano}'
+    col_cor = f'{col_cor}_{ano}'
     layer = pdk.Layer(
         "GeoJsonLayer",
         data,
@@ -32,7 +33,7 @@ def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='mean_valor_d
         wireframe=True,
         pickable=True,
         get_elevation =f"properties.{col_altura}/{dividir_altura}",
-        get_fill_color=f"[properties.{col_altura}/{dividir_altura}*100, 180, 182]",
+        get_fill_color=f"[255, 255/properties.{col_cor}, 0]",
         get_line_color=[230, 230, 255],
         auto_highlight=True,
 
