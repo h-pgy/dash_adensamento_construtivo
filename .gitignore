@@ -1,6 +1,7 @@
 #project-specific ignores
 data/
 original_data/
+data.geojson
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
