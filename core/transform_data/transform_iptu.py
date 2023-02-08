@@ -3,16 +3,22 @@ from core.utils.file_path import solve_path
 import pandas as pd
 import os
 from .group_iptu import GroupbySetor
+from .group_quadra import GroupbyQuadra
 from config import GENERATED_DATA_FOLDER, IPTU_YEARS
 
 class TransformAllIptu:
     
-    def __init__(self, folder:str = GENERATED_DATA_FOLDER, years:list=IPTU_YEARS)->None:
+    def __init__(self, folder:str = GENERATED_DATA_FOLDER, years:list=IPTU_YEARS,
+                tipo:str='setor')->None:
         
         self.iptus = iptu_gen() 
-        self.transform = GroupbySetor()
+        if tipo == 'setor':
+            self.transform = GroupbySetor()
+        else:
+            self.transform = GroupbyQuadra()
         self.folder = folder
         self.years = years
+        self.tipo = tipo
 
     def extract_ano_df(self, df:pd.DataFrame)->str:
         
@@ -22,7 +28,7 @@ class TransformAllIptu:
     def get_fname(self, ano:int)->str:
         
         
-        fname = f'{ano}_setores.parquet.gzip'
+        fname = f'{ano}_{self.tipo}.parquet.gzip'
         fname = solve_path(fname, parent=self.folder)
         
         return fname
@@ -67,7 +73,7 @@ class TransformAllIptu:
     
     def pipeline(self):
         
-        fname = solve_path('setores_all_years.parquet.gzip', self.folder)
+        fname = solve_path(f'{self.tipo}_all_years.parquet.gzip', self.folder)
         
         if os.path.exists(fname):
             print('Reading saved file')

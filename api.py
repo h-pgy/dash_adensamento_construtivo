@@ -3,8 +3,8 @@ from fastapi.responses import StreamingResponse
 import json
 
 app = FastAPI()
-with open('data.geojson', 'r') as f:
-    data = json.load(f)
+#with open('data.geojson', 'r') as f:
+#    data = json.load(f)
 
 
 @app.get("/data.geojson")

@@ -3,7 +3,6 @@ import pydeck as pdk
 import json
 from copy import copy
 import requests
-from core.transform_data import shp_setores_calculado
 import requests
 import time
 
@@ -17,7 +16,7 @@ def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='prop_area_co
                         ano=2022, dividir_altura = 1000):
 
     #tem que atualizar o link do ngrok
-    ngrok = 'https://a908-2804-7f0-bcc0-af09-53b1-4844-a929-ae44.sa.ngrok.io'
+    ngrok = 'https://5239-2804-7f0-bcc0-af09-53b1-4844-a929-ae44.sa.ngrok.io'
     data = ngrok + '/data.geojson'
     
 

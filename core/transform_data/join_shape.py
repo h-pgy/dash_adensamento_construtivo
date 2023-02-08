@@ -3,22 +3,23 @@ import os
 
 from core.utils.file_path import solve_path
 from .transform_iptu import TransformAllIptu
-from core.read_data import read_shp_quadras
+from core.read_data import read_shp_quadras, read_shp_setores
 from config import GENERATED_DATA_FOLDER
 import geopandas as gpd
 
 class JoinShp:
 
 
-    def __init__(self)->None:
+    def __init__(self, tipo:str)->None:
 
-        self.get_setores_iptu = TransformAllIptu()
 
-        self.fname = solve_path('setores_geodataframe.shp', GENERATED_DATA_FOLDER)
+        self.tipo = tipo
+        self.get_setores_iptu = TransformAllIptu(tipo=self.tipo)
+        self.fname = solve_path(f'{self.tipo}_geodataframe.shp', GENERATED_DATA_FOLDER)
 
-    def pivot_setores_iptu(self, df:pd.DataFrame)->pd.DataFrame:
+    def pivot_iptu(self, df:pd.DataFrame)->pd.DataFrame:
 
-        pivotado = df.pivot(index='setor', columns='ano', 
+        pivotado = df.pivot(index=self.tipo, columns='ano', 
                                             values=[
                                                 'sum_area_construida', 
                                                 'mean_valor_do_m2_do_terreno',
@@ -26,7 +27,7 @@ class JoinShp:
                                                 ]
                                             )
         pivotado = pivotado.reset_index()
-        pivotado.rename({'' : 'setor'},axis=1, inplace=True)
+        pivotado.rename({'' : self.tipo},axis=1, inplace=True)
 
         return pivotado
 
@@ -40,28 +41,35 @@ class JoinShp:
             tmp.rename(rename, axis=1, inplace=True)
             dfs.append(tmp)
 
-        dfs.append(df['setor'])
+        dfs.append(df[self.tipo])
         df = pd.concat(dfs, axis=1, ignore_index=False)
 
         return df
 
-    def get_shape_setores(self)->gpd.GeoDataFrame:
+    def get_shape(self)->gpd.GeoDataFrame:
 
-        shp_setores = read_shp_quadras()
+        if self.tipo == 'setor':
+            shp = read_shp_setores()
+        else:
+            shp = read_shp_quadras()
+        return shp
 
-        return shp_setores
+    def create_iptu_col(self, shp:gpd.GeoDataFrame)->None:
 
-    def create_setores_col(self, shp_setores:gpd.GeoDataFrame)->None:
-
-        shp_setores['setor'] = shp_setores['st_codigo']
+        if self.tipo=='setor':
+            shp['setor'] = shp['st_codigo']
+        else:
+            shp['quadra'] = shp['qd_setor']+shp['qd_fiscal']
     
-    def select_cols_shp(self, shp_setores:gpd.GeoDataFrame)->gpd.GeoDataFrame:
+    def select_cols_shp(self, shp:gpd.GeoDataFrame)->gpd.GeoDataFrame:
 
-        return shp_setores[['setor', 'geometry']]
+        if self.tipo=='setor':
+            return shp[['setor', 'geometry']]
+        return shp[['quadra', 'geometry']]
 
-    def merge(self, shp_setores:gpd.GeoDataFrame, setores_iptu:pd.DataFrame)->pd.DataFrame:
+    def merge(self, shp:gpd.GeoDataFrame, iptu:pd.DataFrame)->pd.DataFrame:
 
-        final = pd.merge(shp_setores, setores_iptu, how='left').fillna(0)
+        final = pd.merge(shp, iptu, how='left').fillna(0)
         
         return final
 
@@ -79,10 +87,10 @@ class JoinShp:
         #    return gpd.read_file(self.fname)
         
         setores_iptu = self.get_setores_iptu()
-        setores_iptu = self.pivot_setores_iptu(setores_iptu) 
+        setores_iptu = self.pivot_iptu(setores_iptu) 
         setores_iptu = self.solve_pivoted_column(setores_iptu)
-        shp_setores = self.get_shape_setores()
-        self.create_setores_col(shp_setores)
+        shp_setores = self.get_shape()
+        self.create_iptu_col(shp_setores)
         shp_setores = self.select_cols_shp(shp_setores)
         final = self.merge(shp_setores, setores_iptu)
         final = self.convert_geodf(final)
