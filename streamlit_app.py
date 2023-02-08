@@ -12,7 +12,7 @@ ano = st.selectbox(
     'Escolha o ano?',
     ('1995', '2013', '2022'))
 
-def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='prop_area_construida', 
+def gerar_mapa_setores(col_altura = 'prop_area_construida', col_cor='prop_area_construida', 
                         ano=2022, dividir_altura = 1000):
 
     #tem que atualizar o link do ngrok
@@ -59,7 +59,7 @@ def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='prop_area_co
     
     return r
 
-r = gerar_mapa_setores(ano=ano, dividir_altura=1000)
+r = gerar_mapa_setores(ano=ano, dividir_altura=0.001)
 
 st.pydeck_chart(
     r
