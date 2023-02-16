@@ -8,7 +8,7 @@ with st.sidebar:
     ## Dashboard Adensamento Construtivo
     ### Cidade de São Paulo - 1995 a 2022
 
-    Este aplicativo, a partir da análise da base de dados do **IPTU** para os anos de 1995 a 2022, permite visualizar o adensamento construtivo da cidade de São Paulo neste período.
+    Este aplicativo, a partir da análise da base de dados do **IPTU** para os anos de 1995 a 2022, permite visualizar o adensamento construtivo da cidade de São Paulo neste período. O adensamento é calculado a partir da somatória da área construída por lote para cada setor da cidade, para cada ano.
     """
     st.markdown(text)
 
@@ -24,6 +24,7 @@ st.title('Adensamento Construtivo na Cidade de São Paulo', anchor=None)
 
 ano = st.select_slider("Selecione o ano:", list(range(1995, 2023)))
 
+@st.cache_resource
 def gerar_mapa_setores(col_altura = 'sum_area_construida', col_cor='sum_area_construida', 
                         ano=2022, dividir_altura = 1000):
 
